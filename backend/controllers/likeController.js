@@ -24,4 +24,19 @@ const toggleLike = async (req, res) => {
   }
 };
 
-module.exports = { toggleLike };
+const getAllLikes = async (req, res) => {
+  try {
+    const likes = await Like.find()
+      .populate('user', 'name email')    // Kullanıcıdan sadece isim ve email al
+      .populate('blog', 'title')         // Blogdan sadece başlık al
+      .sort({ createdAt: -1 })            // En yeni beğeniler önce
+      .lean();
+
+    res.json(likes);
+  } catch (err) {
+    res.status(500).json({ message: 'Beğeniler alınamadı', error: err.message });
+  }
+};
+
+module.exports = { toggleLike, getAllLikes };
+

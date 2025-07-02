@@ -25,6 +25,9 @@ const likeRoutes = require('./routes/likeRoutes');
 app.use('/api/likes', likeRoutes);
 const commentRoutes = require('./routes/commentRoutes');
 app.use('/api/comments', commentRoutes);
+const tagRoutes = require('./routes/tagRoutes');
+app.use('/api/tags', tagRoutes);
+
 app.use('/uploads', express.static('uploads'));
 
 

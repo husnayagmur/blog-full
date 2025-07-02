@@ -1,4 +1,4 @@
-const Blog = require('../Blog-Backend-/models/Blog');
+const Blog = require('../models/Blog');
 const createBlog = async (req, res) => {
     try {
         const { title, content, tags } = req.body;

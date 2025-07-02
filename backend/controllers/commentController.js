@@ -57,7 +57,33 @@ const getCommentsByBlog = async (req, res) => {
         res.status(500).json({ message: 'Yorumlar getirilemedi', error: err.message });
     }
 };
+const getAllComments = async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .populate('author', 'name email')
+      .populate('blog', 'title')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Dilersen ağaç yapısına dönüştür
+    const commentMap = {};
+    comments.forEach(c => commentMap[c._id] = {...c, children: []});
+
+    const rootComments = [];
+    comments.forEach(c => {
+      if (c.parentComment) {
+        commentMap[c.parentComment]?.children.push(commentMap[c._id]);
+      } else {
+        rootComments.push(commentMap[c._id]);
+      }
+    });
+
+    res.json(rootComments);
+  } catch (err) {
+    res.status(500).json({ message: 'Yorumlar alınamadı', error: err.message });
+  }
+};
 
 
 
-module.exports = { addComment, getCommentsByBlog };
+module.exports = { addComment, getCommentsByBlog,getAllComments };
