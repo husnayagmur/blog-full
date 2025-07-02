@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AdminLayout from '@/components/AdminLayout';
 
-const API_BASE = 'http://localhost:5000/api/comments'; // backend yorum endpoint
+const API_BASE = 'http://localhost:5000/api/comments';
 
 const Comments = () => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Yorumları çek (tüm bloglar için ya da backendde farklı endpoint varsa onu kullan)
   const fetchComments = async () => {
     setLoading(true);
+    setError('');
     try {
       const token = localStorage.getItem('token');
       const res = await axios.get(API_BASE, {
@@ -25,7 +25,6 @@ const Comments = () => {
     }
   };
 
-  // Yorum silme (admin yetkisiyle)
   const handleDelete = async (id) => {
     if (!window.confirm('Bu yorumu silmek istediğinize emin misiniz?')) return;
     try {
@@ -43,32 +42,66 @@ const Comments = () => {
     fetchComments();
   }, []);
 
-  // Yorumları ağaç yapısında listelemek için recursive fonksiyon
   const renderComments = (commentsList, level = 0) => {
     return commentsList.map(comment => (
-      <div key={comment._id} style={{ marginLeft: level * 20, borderLeft: level ? '1px solid #ccc' : 'none', paddingLeft: 10, marginBottom: 10 }}>
-        <div><strong>{comment.author?.name || 'Bilinmeyen'}</strong> ({comment.author?.email || 'E-posta yok'})</div>
-        <div style={{ whiteSpace: 'pre-wrap' }}>{comment.content}</div>
-        <div style={{ fontSize: '0.8rem', color: '#666' }}>{new Date(comment.createdAt).toLocaleString()}</div>
-        <button onClick={() => handleDelete(comment._id)} style={{ color: 'red', cursor: 'pointer', marginTop: 5 }}>Sil</button>
-        {comment.children && comment.children.length > 0 && renderComments(comment.children, level + 1)}
+      <div
+        key={comment._id}
+        className={`rounded-md p-4 mb-4 shadow-sm transition-colors duration-200 ${
+          level === 0 ? 'bg-[#f9f9f4]' : 'bg-[#efefe7]'
+        }`}
+        style={{
+          marginLeft: level * 24,
+          borderLeft: level ? '4px solid #8C7A64' : 'none',
+        }}
+      >
+        <div className="flex justify-between items-center mb-1">
+          <div>
+            <strong className="text-[#555936]">{comment.author?.name || 'Bilinmeyen'}</strong>{' '}
+            <span className="text-sm text-gray-500">({comment.author?.email || 'E-posta yok'})</span>
+          </div>
+          <button
+            onClick={() => handleDelete(comment._id)}
+            className="text-red-600 hover:text-red-800 transition-colors duration-150 font-semibold"
+            aria-label="Yorumu sil"
+          >
+            Sil
+          </button>
+        </div>
+
+        <p className="whitespace-pre-wrap text-gray-700 mb-2">{comment.content}</p>
+
+        <div className="text-xs text-gray-400">
+          {new Date(comment.createdAt).toLocaleString('tr-TR')}
+        </div>
+        {comment.children && comment.children.length > 0 && (
+          <div className="mt-4">
+            {renderComments(comment.children, level + 1)}
+          </div>
+        )}
       </div>
     ));
   };
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-bold mb-4">Yorum Yönetimi</h1>
+      <div className="max-w-5xl mx-auto p-6">
+        <h1 className="text-3xl font-extrabold mb-8 text-[#555936] border-b-4 border-[#8C7A64] pb-2">
+          Yorum Yönetimi
+        </h1>
 
-      {loading && <p>Yükleniyor...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+        {loading && <p className="text-gray-500">Yükleniyor...</p>}
+        {error && <p className="text-red-600 font-medium">{error}</p>}
 
-      {!loading && !error && (
-        <div>
-          {comments.length === 0 && <p>Yorum bulunamadı.</p>}
-          {renderComments(comments)}
-        </div>
-      )}
+        {!loading && !error && (
+          <>
+            {comments.length === 0 ? (
+              <p className="text-gray-400 text-center mt-20">Henüz yorum bulunmamaktadır.</p>
+            ) : (
+              <div>{renderComments(comments)}</div>
+            )}
+          </>
+        )}
+      </div>
     </AdminLayout>
   );
 };

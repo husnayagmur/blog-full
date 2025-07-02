@@ -3,11 +3,11 @@ import Sidebar from './Sidebar';
 
 const AdminLayout = ({ children }) => {
   return (
-    <div className="flex min-h-screen max-w-7xl">
-      <div className="w-1/5">
+    <div className="flex min-h-screen ">
+      <div className="w-1/6">
         <Sidebar />
       </div>
-      <main className="w-4/5 p-5">
+      <main className="w-4/5 p-5 justify-center items-center">
         {children}
       </main>
     </div>
