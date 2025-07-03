@@ -16,7 +16,6 @@ const addComment = async (req, res) => {
             content,
             parentComment: parentComment || null,
         });
-
         await newComment.save();
 
         res.status(201).json({ message: 'Yorum eklendi', comment: newComment });
@@ -83,7 +82,33 @@ const getAllComments = async (req, res) => {
     res.status(500).json({ message: 'Yorumlar alınamadı', error: err.message });
   }
 };
+const deleteComment = async (req, res) => {
+  try {
+    const commentId = req.params.commentId; // Silinecek yorumun ID'si
+
+    // Yorumun var olup olmadığını kontrol et
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: 'Yorum bulunamadı' });
+    }
+
+    // Eğer yorumun bir yanıtı varsa (parentComment) o zaman öncelikle yanıtı da silmelisiniz
+    // (Opsiyonel, ancak yanıtları da silmek isteyebilirsiniz)
+    if (comment.children && comment.children.length > 0) {
+      for (let childComment of comment.children) {
+        await Comment.findByIdAndDelete(childComment._id);  // Yanıtları sil
+      }
+    }
+    // Yorumun kendisini sil
+    await Comment.findByIdAndDelete(commentId);
+
+    res.status(200).json({ message: 'Yorum başarıyla silindi' });
+  } catch (err) {
+    console.error('Yorum silme hatası:', err);
+    res.status(500).json({ message: 'Yorum silinemedi', error: err.message });
+  }
+};
 
 
 
-module.exports = { addComment, getCommentsByBlog,getAllComments };
+module.exports = { addComment, getCommentsByBlog,getAllComments,deleteComment };

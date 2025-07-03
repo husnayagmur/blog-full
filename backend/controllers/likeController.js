@@ -27,7 +27,7 @@ const toggleLike = async (req, res) => {
 const getAllLikes = async (req, res) => {
   try {
     const likes = await Like.find()
-      .populate('user', 'name email')    // Kullanıcıdan sadece isim ve email al
+      .populate('user', 'name email')   
       .populate('blog', 'title')         // Blogdan sadece başlık al
       .sort({ createdAt: -1 })            // En yeni beğeniler önce
       .lean();

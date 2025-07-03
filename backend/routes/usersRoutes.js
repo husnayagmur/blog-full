@@ -5,14 +5,14 @@ const upload = require('../middleware/uploadMiddleware');
 const authController = require('../controllers/authController');
 
 router.get('/profile', authMiddleware, (req, res) => {
-  res.json(req.user);
+    res.json(req.user);
 });
 
 router.put(
-  '/profile',
-  authMiddleware,
-  upload.single('profil'), 
-  authController.updateProfile
+    '/profile',
+    authMiddleware,
+    upload.single('profil'),
+    authController.updateProfile
 );
 
 router.post('/upload-profil', authMiddleware, upload.single('profil'), authController.uploadProfil);

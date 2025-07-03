@@ -2,17 +2,15 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-export default function KategoriSayfasi() {
+export default function categories() {
   const router = useRouter();
   const { slug } = router.query;
-
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!slug) return;
-
     const fetchBlogs = async () => {
       setLoading(true);
       setError(null);
@@ -41,36 +39,40 @@ export default function KategoriSayfasi() {
   const otherBlogs = blogs.slice(4);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-12 text-center text-gray-800">
+    <div className="max-w-7xl mx-auto px-6 py-12 bg-[#f9fafb]">
+      <h1 className="text-4xl  font-serif font-semibold mb-12 text-center text-[#555936] capitalize tracking-wider drop-shadow-sm">
         {slug.replace(/-/g, ' ')}
+        <span className="block w-24 h-1 bg-[#8C7A64] mx-auto mt-4 rounded"></span>
       </h1>
-
-      {/* 4 Büyük Öne Çıkan Kart */}
       <div className="space-y-10 mb-16">
         {featuredBlogs.map((blog) => (
           <div
             key={blog._id}
-            className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+            className="flex flex-col md:flex-row bg-white rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition duration-300"
           >
             <div className="md:w-1/3 h-64 relative">
               <img
-                src={blog.image || '/placeholder.png'}
+                src={blog.image || '/image/a2.jpg'}
                 alt={blog.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-l-xl md:rounded-none"
               />
             </div>
-            <div className="p-6 flex flex-col justify-between md:w-2/3">
+            <div className="p-6 flex flex-col justify-between md:w-2/3 space-y-4">
               <div>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-3">{blog.title}</h2>
-                <p className="text-gray-700 mb-6 leading-relaxed">
+                <h2 className="text-2xl font-semibold text-[#555936] mb-2">
+                  {blog.title}
+                </h2>
+                <p className="text-gray-700 text-sm leading-relaxed">
                   {blog.content.length > 300
                     ? blog.content.substring(0, 300) + '...'
                     : blog.content}
                 </p>
               </div>
-              <Link href={`/blog/${blog._id}`} className="text-green-700 hover:text-green-900 font-semibold transition-colors">
-                Daha Fazlasını Oku &rarr;
+              <Link
+                href={`/blog/${blog._id}`}
+                className="text-[#8C7A64] font-medium text-sm hover:underline hover:text-[#6e5f4c] transition"
+              >
+                Daha Fazlasını Oku →
               </Link>
             </div>
           </div>
@@ -80,22 +82,28 @@ export default function KategoriSayfasi() {
         {otherBlogs.map((blog) => (
           <div
             key={blog._id}
-            className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300"
+            className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between"
           >
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{blog.title}</h3>
-              <p className="text-gray-700 mb-4 leading-relaxed">
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-[#555936]">
+                {blog.title}
+              </h3>
+              <p className="text-gray-700 text-sm leading-relaxed">
                 {blog.content.length > 150
                   ? blog.content.substring(0, 150) + '...'
                   : blog.content}
               </p>
             </div>
-            <Link href={`/blog/${blog._id}`} className="text-green-700 hover:text-green-900 font-semibold transition-colors">
-              Oku Devamı &rarr;
+            <Link
+              href={`/blog/${blog._id}`}
+              className="mt-4 text-sm text-[#8C7A64] font-medium hover:underline hover:text-[#6e5f4c] transition"
+            >
+              İçeriği Oku →
             </Link>
           </div>
         ))}
       </div>
     </div>
+
   );
 }

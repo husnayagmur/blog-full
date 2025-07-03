@@ -1,4 +1,3 @@
-// controllers/tagController.js
 const Blog = require('../models/Blog');
 
 const getAllTags = async (req, res) => {

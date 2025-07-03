@@ -57,32 +57,30 @@ export default function AdminHome() {
         <h1 className="text-4xl font-extrabold mb-10 text-[#555936] tracking-tight">
           Yönetim Paneli Dashboard
         </h1>
-
-       {/* İstatistik Kartları - Yatay Düzen */}
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14">
-  {stats.map(({ title, count, icon, color }) => (
-    <div
-      key={title}
-      className="flex items-center p-6 rounded-xl shadow-md bg-gray-100 text-gray-800 transition-transform transform hover:scale-105 cursor-default"
-      style={{
-        borderLeft: `6px solid ${color}`,
-        backgroundColor: '#f0f6f4',
-      }}
-    >
-      <div
-        className="flex-shrink-0 mr-6"
-        style={{ color, fontSize: '2.5rem' }}
-        aria-label={`${title} ikonu`}
-      >
-        {icon}
-      </div>
-      <div>
-        <p className="text-4xl font-bold">{count}</p>
-        <p className="uppercase text-sm tracking-wide mt-1">{title}</p>
-      </div>
-    </div>
-  ))}
-</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14">
+          {stats.map(({ title, count, icon, color }) => (
+            <div
+              key={title}
+              className="flex items-center p-6 rounded-xl shadow-md bg-gray-100 text-gray-800 transition-transform transform hover:scale-105 cursor-default"
+              style={{
+                borderLeft: `6px solid ${color}`,
+                backgroundColor: '#f0f6f4',
+              }}
+            >
+              <div
+                className="flex-shrink-0 mr-6"
+                style={{ color, fontSize: '2.5rem' }}
+                aria-label={`${title} ikonu`}
+              >
+                {icon}
+              </div>
+              <div>
+                <p className="text-4xl font-bold">{count}</p>
+                <p className="uppercase text-sm tracking-wide mt-1">{title}</p>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <section className="col-span-2 bg-white rounded-xl shadow-lg p-8">
@@ -142,7 +140,7 @@ export default function AdminHome() {
                 </li>
               ))}
             </ul>
-          </section>          
+          </section>
         </div>
       </div>
     </AdminLayout>

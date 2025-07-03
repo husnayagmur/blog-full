@@ -29,9 +29,6 @@ const Sidebar = () => {
           <Link href="/admin/users" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
             <FaUsers /> Kullanıcı Yönetimi
           </Link>
-          <Link href="/admin/categories" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
-            <FaListAlt /> Kategori Yönetimi
-          </Link>
           <Link href="/admin/tags" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
             <FaTags /> Etiket Yönetimi
           </Link>

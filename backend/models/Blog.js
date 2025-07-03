@@ -19,7 +19,7 @@ const blogSchema = new mongoose.Schema({
         default: 0,
     },
     tags: [String],
-    imageUrl: {             // Yeni alan eklendi
+    imageUrl: {
         type: String,
         default: null,
     }

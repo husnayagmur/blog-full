@@ -19,7 +19,7 @@ app.use(helmet());
 
 
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/users', require('./routes/usersRoutes'));
 app.use('/api/blogs', require('./routes/blogRoutes'));
 const likeRoutes = require('./routes/likeRoutes');
 app.use('/api/likes', likeRoutes);
@@ -28,7 +28,8 @@ app.use('/api/comments', commentRoutes);
 const tagRoutes = require('./routes/tagRoutes');
 app.use('/api/tags', tagRoutes);
 
-app.use('/uploads', express.static('uploads'));
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 

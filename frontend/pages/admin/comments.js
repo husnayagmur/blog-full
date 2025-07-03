@@ -1,49 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchComments, deleteComment } from '@/redux/slice/admin/adminCommentsSlice';
 import AdminLayout from '@/components/AdminLayout';
 
-const API_BASE = 'http://localhost:5000/api/comments';
-
 const Comments = () => {
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const fetchComments = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(API_BASE, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setComments(res.data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Yorumlar alınamadı.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Bu yorumu silmek istediğinize emin misiniz?')) return;
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${API_BASE}/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setComments(comments.filter(c => c._id !== id));
-    } catch (err) {
-      alert(err.response?.data?.message || 'Silme işlemi başarısız.');
-    }
-  };
+  const dispatch = useDispatch();
+const { comments: commentList = [], loading, error } = useSelector((state) => state.adminComments);
 
   useEffect(() => {
-    fetchComments();
-  }, []);
+    dispatch(fetchComments());
+  }, [dispatch]);
+
+  const handleDelete = (id) => {
+    if (!window.confirm('Bu yorumu silmek istediğinize emin misiniz?')) return;
+    dispatch(deleteComment(id));
+  };
 
   const renderComments = (commentsList, level = 0) => {
-    return commentsList.map(comment => (
+    return commentsList.map((comment) => (
       <div
         key={comment._id}
         className={`rounded-md p-4 mb-4 shadow-sm transition-colors duration-200 ${
@@ -73,10 +47,9 @@ const Comments = () => {
         <div className="text-xs text-gray-400">
           {new Date(comment.createdAt).toLocaleString('tr-TR')}
         </div>
+
         {comment.children && comment.children.length > 0 && (
-          <div className="mt-4">
-            {renderComments(comment.children, level + 1)}
-          </div>
+          <div className="mt-4">{renderComments(comment.children, level + 1)}</div>
         )}
       </div>
     ));
@@ -92,15 +65,14 @@ const Comments = () => {
         {loading && <p className="text-gray-500">Yükleniyor...</p>}
         {error && <p className="text-red-600 font-medium">{error}</p>}
 
-        {!loading && !error && (
-          <>
-            {comments.length === 0 ? (
-              <p className="text-gray-400 text-center mt-20">Henüz yorum bulunmamaktadır.</p>
-            ) : (
-              <div>{renderComments(comments)}</div>
-            )}
-          </>
-        )}
+       {!loading && !error && commentList.length > 0 && (
+  <div className="mt-6 space-y-4">{renderComments(commentList)}</div>
+)}
+
+{!loading && !error && commentList.length === 0 && (
+  <p className="text-gray-500">Henüz yorum yok.</p>
+)}
+
       </div>
     </AdminLayout>
   );

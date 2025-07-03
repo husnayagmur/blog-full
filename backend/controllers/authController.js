@@ -47,7 +47,7 @@ const register = async (req, res) => {
         email: user.email,
         isVerified: user.isVerified
       },
-      token: generateToken(user._id)  // burada token da dön
+      token: generateToken(user._id)
     });
 
 
@@ -55,8 +55,6 @@ const register = async (req, res) => {
     res.status(500).json({ message: 'Kayıt işlemi sırasında bir hata oluştu.', error: err.message });
   }
 };
-
-
 // Giriş (Login)
 const login = async (req, res) => {
   try {
@@ -86,7 +84,6 @@ const login = async (req, res) => {
     res.status(500).json({ message: 'Giriş sırasında hata oluştu.', error: err.message });
   }
 };
-
 //şifremi unuttum
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -98,7 +95,7 @@ const forgotPassword = async (req, res) => {
     }
 
     const resetToken = generateRandomToken();
-    const resetExpire = Date.now() + 1000 * 60 * 30; // 30 dakika geçerli
+    const resetExpire = Date.now() + 1000 * 60 * 30; 
 
     user.resetToken = resetToken;
     user.resetTokenExpire = resetExpire;
@@ -121,7 +118,6 @@ const forgotPassword = async (req, res) => {
     res.status(500).json({ message: 'Şifre sıfırlama sırasında bir hata oluştu.', error: err.message });
   }
 };
-
 //Şifre resetleme
 const resetPassword = async (req, res) => {
   const { token } = req.params;
@@ -147,8 +143,6 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Şifre sıfırlama sırasında hata oluştu.', error: err.message });
   }
 };
-
-
 // E-posta Doğrulama
 const verifyEmail = async (req, res) => {
   const { token } = req.params;

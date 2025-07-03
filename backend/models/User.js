@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     type: String, // Profil resmi dosya yolu
     default: ''
   },
+  bio: {
+  type: String,
+  default: '',
+},
   role: {
     type: String,
     enum: ['user', 'admin'],

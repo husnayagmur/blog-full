@@ -1,6 +1,6 @@
 import React from 'react'
-import Bloglar from './blog/bloglar'
-import Hakkimizda from './hakkimizda/hakkimizda'
+import Bloglar from './blog/blogs'
+import Hakkimizda from './aboutUs/aboutUs'
 import BlogDetay from './blog/[id]'
 import Home from './home/home'
 
