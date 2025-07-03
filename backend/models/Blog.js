@@ -22,7 +22,11 @@ const blogSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         default: null,
-    }
-}, { timestamps: true }); 
+    },
+    category: {
+        type: String,
+        required: [true, 'Kategori zorunludur.'],
+    },
+}, { timestamps: true });
 
 module.exports = mongoose.model("Blog", blogSchema);

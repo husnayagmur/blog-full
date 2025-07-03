@@ -1,13 +1,16 @@
 import Link from 'next/link';
-
-const categories = [
-  { name: 'Kabile Yaşamı', slug: 'kabile-yasami' },
-  { name: 'Yaşam Kalitesi', slug: 'yasam-kalitesi' },
-  { name: 'Şifalı Bitkiler', slug: 'sifali-bitkiler' },
-  { name: 'Hayatta Kalma ve Avcılık', slug: 'hayatta-kalma-ve-avcilik' },
-];
+import { useEffect, useState } from 'react';
 
 export default function Dropdown({ onClose }) {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/categories')
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error('Kategori alınamadı', err));
+  }, []);
+
   return (
     <div className="mt-2 w-56 bg-white shadow-lg border rounded z-50">
       {categories.map((cat) => (

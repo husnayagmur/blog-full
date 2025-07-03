@@ -27,7 +27,7 @@ const commentRoutes = require('./routes/commentRoutes');
 app.use('/api/comments', commentRoutes);
 const tagRoutes = require('./routes/tagRoutes');
 app.use('/api/tags', tagRoutes);
-
+app.use('/api/categories', require('./routes/categoryRoutes'));
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

@@ -3,18 +3,26 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 const createBlog = async (req, res) => {
   try {
-    const { title, content, tags } = req.body;
+    const { title, content, tags, category } = req.body;
+
+    if (!category || typeof category !== 'string' || category.trim() === '') {
+      return res.status(400).json({ message: 'Kategori zorunludur.' });
+    }
 
     let parsedTags = [];
-    try {
-      parsedTags = Array.isArray(tags) ? tags : JSON.parse(tags);
-    } catch {
-      parsedTags = [tags];
+    if (tags) {
+      try {
+        parsedTags = Array.isArray(tags) ? tags : JSON.parse(tags);
+      } catch {
+        parsedTags = [tags];
+      }
     }
+
     const blog = await Blog.create({
       title,
       content,
       tags: parsedTags,
+      category: category.trim(),
       imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
       author: req.user._id,
     });
@@ -27,12 +35,10 @@ const createBlog = async (req, res) => {
 
 const getAllBlogs = async (req, res) => {
   try {
-    const { tags, author, search, sort, startDate, endDate } = req.query;
-    const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+    const { tags, author, search, sort, startDate, endDate, category } = req.query;
+
     let filter = {};
-    function slugToTag(slug) {
-      return slug.toLowerCase().replace(/-/g, ' ');
-    }
+
     function tagToSlug(tag) {
       return tag.toLowerCase().replace(/ /g, '-');
     }
@@ -44,12 +50,26 @@ const getAllBlogs = async (req, res) => {
     if (author) {
       filter.author = author;
     }
+   if (category) {
+  const normalizeCategoryName = (name) => {
+    const map = {
+      ç: 'c', ğ: 'g', ı: 'i', İ: 'i', ö: 'o', ş: 's', ü: 'u',
+      Ç: 'c', Ğ: 'g', Ö: 'o', Ş: 's', Ü: 'u'
+    };
+    return name
+      .toLowerCase()
+      .split('')
+      .map(char => map[char] || char)
+      .join('');
+  };
+
+  const normalized = normalizeCategoryName(category);
+  filter.category = new RegExp(`^${normalized}$`, 'i');
+}
+
     if (startDate || endDate) {
       filter.createdAt = {};
-
-      if (startDate) {
-        filter.createdAt.$gte = new Date(startDate);
-      }
+      if (startDate) filter.createdAt.$gte = new Date(startDate);
       if (endDate) {
         const nextDay = new Date(endDate);
         nextDay.setDate(nextDay.getDate() + 1);
@@ -70,20 +90,17 @@ const getAllBlogs = async (req, res) => {
 
     const blogs = await Blog.find(filter)
       .populate('author', 'name email bio profil')
+      .populate('category', 'name slug')
       .sort(sortOption)
       .lean();
+
     const blogsWithImages = blogs.map(blog => ({
-      ...blog,
-      imageUrl: blog.imageUrl
-        ? (blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BACKEND_URL}${blog.imageUrl}`)
-        : null,
-      author: {
-        ...blog.author,
-        avatar: blog.author.profil
-          ? (blog.author.profil.startsWith('http') ? blog.author.profil : `${BACKEND_URL}${blog.author.profil}`)
-          : null,
-      }
-    }));
+  ...blog,
+  imageUrl: blog.imageUrl
+    ? (blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BACKEND_URL}${blog.imageUrl}`)
+    : null,
+}));
+
 
     res.json(blogsWithImages);
 
@@ -95,7 +112,9 @@ const getAllBlogs = async (req, res) => {
 const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id)
-      .populate('author', 'name email bio profil');
+      .populate('author', 'name email bio profil')
+      .populate('category', 'name slug');
+
     if (!blog) return res.status(404).json({ message: 'Blog bulunamadı' });
 
     const blogWithFullPaths = {
@@ -126,11 +145,10 @@ const updateBlog = async (req, res) => {
       return res.status(403).json({ message: 'Bu blogu güncelleyemezsiniz' });
     }
 
-    const { title, content, tags } = req.body;
+    const { title, content, tags, category } = req.body;
     blog.title = title || blog.title;
     blog.content = content || blog.content;
 
-    // tags gelirse parse et
     if (tags) {
       try {
         blog.tags = Array.isArray(tags) ? tags : JSON.parse(tags);
@@ -139,9 +157,12 @@ const updateBlog = async (req, res) => {
       }
     }
 
-    // ✅ Resim güncelleme kontrolü
+    if (category) {
+      blog.category = category;
+    }
+
     if (req.file) {
-      blog.imageUrl = req.file.filename; // veya tam yol istersen: `uploads/${req.file.filename}`
+      blog.imageUrl = `/uploads/${req.file.filename}`;
     }
 
     await blog.save();

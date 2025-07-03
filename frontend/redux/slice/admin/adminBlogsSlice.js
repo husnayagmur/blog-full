@@ -21,10 +21,13 @@ export const addBlog = createAsyncThunk(
     try {
       const state = thunkAPI.getState();
       const token = state.auth?.token;
+      const user = state.auth?.user;
 
-      if (!token) {
-        return thunkAPI.rejectWithValue('Token bulunamadı.');
+      if (!token || !user?._id) {
+        return thunkAPI.rejectWithValue('Giriş yapılmamış ya da kullanıcı bilgisi alınamıyor.');
       }
+
+      formData.append('author', user._id); // ✅ auth'tan gelen user ID'si
 
       const res = await axios.post(API_URL, formData, {
         headers: {
@@ -35,7 +38,9 @@ export const addBlog = createAsyncThunk(
 
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Blog eklenemedi.');
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || 'Blog eklenemedi.'
+      );
     }
   }
 );
@@ -58,7 +63,7 @@ export const updateBlog = createAsyncThunk(
         },
       });
 
-      return res.data; // güncellenmiş blog
+      return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data?.message || 'Blog güncellenemedi.');
     }
@@ -87,6 +92,11 @@ export const deleteBlog = createAsyncThunk(
   }
 );
 
+const normalizeAuthor = (blog) => ({
+  ...blog,
+  author: typeof blog.author === 'string' ? { name: blog.author } : blog.author,
+});
+
 const adminBlogsSlice = createSlice({
   name: 'adminBlogs',
   initialState: {
@@ -103,22 +113,23 @@ const adminBlogsSlice = createSlice({
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
         state.loading = false;
-        state.blogs = action.payload;
+        state.blogs = action.payload.map(normalizeAuthor);
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       .addCase(addBlog.fulfilled, (state, action) => {
-        state.blogs.unshift(action.payload);
+        state.blogs.unshift(normalizeAuthor(action.payload));
       })
       .addCase(deleteBlog.fulfilled, (state, action) => {
         state.blogs = state.blogs.filter((blog) => blog._id !== action.payload);
       })
       .addCase(updateBlog.fulfilled, (state, action) => {
-        const index = state.blogs.findIndex((b) => b._id === action.payload._id);
+        const updated = normalizeAuthor(action.payload);
+        const index = state.blogs.findIndex((b) => b._id === updated._id);
         if (index !== -1) {
-          state.blogs[index] = action.payload;
+          state.blogs[index] = updated;
         }
       });
   },

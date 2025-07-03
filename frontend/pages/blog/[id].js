@@ -8,6 +8,7 @@ import {
   toggleReplyBox,
   setReplyText,
 } from '../../redux/slice/commentSlice';
+import Image from 'next/image';
 
 const BlogDetail = () => {
   const router = useRouter();
@@ -118,15 +119,21 @@ const BlogDetail = () => {
         </p>
       </header>
       {blog.imageUrl && (
-        <figure className="rounded-xl overflow-hidden border-4 border-[#8C7A64] shadow-lg">
-          <img
-            src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `http://localhost:5000${blog.imageUrl}`}
-            alt={blog.title}
-            className="w-full h-[420px] object-cover transition-transform duration-300 hover:scale-105"
-            loading="lazy"
-          />
-        </figure>
-      )}
+  <figure className="flex justify-center rounded-xl overflow-hidden border-4 border-[#8C7A64] shadow-lg max-w-[400px] mx-auto">
+    <Image
+      src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BACKEND_URL}${blog.imageUrl}`}
+      alt={blog.title}
+      layout="responsive"
+      width={400}  // Küçük boyut
+      height={250} // Küçük boyut
+      objectFit="cover"
+      className="transition-transform duration-500 group-hover:scale-110"
+      loading="lazy"
+    />
+  </figure>
+)}
+
+
       <section
         className="prose max-w-none text-[#262610] leading-relaxed font-serif"
         style={{ whiteSpace: 'pre-line' }}

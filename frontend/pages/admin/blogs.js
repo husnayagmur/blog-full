@@ -8,10 +8,12 @@ import {
 } from "@/redux/slice/admin/adminBlogsSlice";
 import AdminLayout from "@/components/AdminLayout";
 import { FaTrashAlt, FaEdit } from "react-icons/fa";
+import Image from "next/image";
 
 export default function BlogYonetimi() {
   const dispatch = useDispatch();
   const { blogs, loading, error } = useSelector((state) => state.adminBlogs);
+  const user = useSelector((state) => state.auth?.user);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -43,6 +45,10 @@ export default function BlogYonetimi() {
       )
     );
     if (image) formData.append("image", image);
+
+    if (!editMode && user?._id) {
+      formData.append("author", user._id); // yeni blog için yazar id'sini ekle
+    }
 
     if (editMode) {
       dispatch(updateBlog({ id: editBlogId, formData })).then((res) => {
@@ -142,20 +148,27 @@ export default function BlogYonetimi() {
                   className="bg-[#f9faf5] rounded-lg p-5 shadow hover:shadow-lg transition-shadow"
                 >
                   {blog.imageUrl && (
-                    <img
-                      src={blog.imageUrl}
-                      alt="Blog Görseli"
-                      className="rounded w-full h-40 object-cover mb-3"
-                    />
+                    <div className="relative w-full h-40 mb-3">
+                      <Image
+                        src={blog.imageUrl.startsWith('http') ? blog.imageUrl : `${BACKEND_URL}${blog.imageUrl}`}
+                        alt="Blog Görseli"
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded"
+                        loading="lazy"
+                      />
+                    </div>
                   )}
-
-                  <h3 className="text-lg font-semibold text-[#555936] mb-1">{blog.title}</h3>
+                  <h3 className="text-lg font-semibold text-[#555936] mb-1">
+                    {blog.title}
+                  </h3>
                   <p className="text-sm text-gray-600">
                     Yazar:{" "}
                     <span className="font-medium">
-                      {blog.author?.name || "Bilinmiyor"}
+                      {blog.author?.name || (blog.author === user._id ? user.name : "Bilinmiyor")}
                     </span>
                   </p>
+
                   <p className="text-sm text-gray-500 mt-1">
                     Tarih: {new Date(blog.createdAt).toLocaleDateString("tr-TR")}
                   </p>

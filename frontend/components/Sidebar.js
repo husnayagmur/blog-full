@@ -2,7 +2,7 @@ import Link from 'next/link';
 import {
   FaHome,
   FaBlog,
-  FaUsers,
+  
   FaListAlt,
   FaTags,
   FaComments,
@@ -10,7 +10,6 @@ import {
   FaCog,
   FaSignOutAlt
 } from 'react-icons/fa';
-
 const Sidebar = () => {
   return (
     <aside className="w-64 bg-white shadow h-screen p-4 fixed flex flex-col justify-between">
@@ -26,8 +25,8 @@ const Sidebar = () => {
           <Link href="/admin/blogs" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
             <FaBlog /> Blog Yönetimi
           </Link>
-          <Link href="/admin/users" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
-            <FaUsers /> Kullanıcı Yönetimi
+          <Link href="/admin/categories" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
+            <FaListAlt /> Kategori Yönetimi
           </Link>
           <Link href="/admin/tags" className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded">
             <FaTags /> Etiket Yönetimi

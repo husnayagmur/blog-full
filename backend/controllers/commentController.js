@@ -101,7 +101,6 @@ const deleteComment = async (req, res) => {
     }
     // Yorumun kendisini sil
     await Comment.findByIdAndDelete(commentId);
-
     res.status(200).json({ message: 'Yorum başarıyla silindi' });
   } catch (err) {
     console.error('Yorum silme hatası:', err);

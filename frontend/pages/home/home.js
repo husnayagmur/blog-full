@@ -76,7 +76,7 @@ const Home = () => {
               Ormanın derinliklerinde yüzyıllardır süregelen bir yaşam biçimi...
               Kültürlerin ve doğanın eşsiz buluşma noktası.
             </p>
-            <Link href="/blog/bloglar" passHref>
+            <Link href="/blog/blogs" passHref>
               <button className="mt-8 bg-[#8C7A64] text-white px-8 py-3 rounded-lg hover:bg-[#555936] cursor-pointer transition">
                 Daha Fazla Keşfet
               </button>
